@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Core Redux Concepts</title>
+</head>
+
+<body>
+
+    <script src="https://unpkg.com/redux@4.0.5/dist/redux.js"></script>
+    <script>
+
+        // 3 main principals of redux
+        // 1. all app data is store in a single state object
+        // 2. the state is read only. it can only be changed by dispatching an action
+        // 3. to describe state changes you have to write a function that takes the current state, the action to perform and you must return the new updated state
+
+        function Dog(name, spaTreatment = false) {
+            if (Dog.counter === undefined) {
+                Dog.counter = 0;
+            }
+            this.id = Dog.counter++;
+            this.name = name;
+            this.spaTreatment = spaTreatment;
+        }
+
+        //Actions only describe what happened but dont describe how application state changes
+
+        //Simple Action Example
+        // let myAction = {
+        //     type: 'CHECK_IN',
+        //     dog: new Dog('molly')
+        // }
+
+        // Action Creator Fucntion
+        const checkIn = (name, spaTreatment = false) => {
+            return {
+                type: 'CHECK_IN',
+                dog: new Dog(name, spaTreatment)
+            }
+        }
+        const checkOut = (dog) => {
+            return {
+                type: 'CHECK_OUT',
+                id: dog.id
+            }
+        }
+
+        // Bound Action Creator
+        const boundCheckIn = name => store.dispatch(checkIn(name));
+        const boundCheckOut = dog => store.dispatch(checkOut(dog));
+
+        //call bound action creator - creates action and dispatches it to the store in one go
+        // boundCheckIn('molly');
+        // boundCheckIn('rover');
+        // boundCheckIn('winston');
+        // boundCheckIn('buster');
+
+
+        //setup initial state for the store
+        const initialState = {
+            dogs: []
+        }
+
+        //Reducers
+        function dogHotelApp(state = initialState, action) {
+            switch (action.type) {
+                case 'CHECK_IN':
+                    return Object.assign({}, state, {
+                        dogs: [...state.dogs, action.dog]
+                    })
+                case 'CHECK_OUT':
+                    return state.dogs.filter(d => d.id !== action.id);
+                default:
+                    return state;
+            }
+        }
+
+        // In redux, all app state is stored as a single store object
+        let store = Redux.createStore(dogHotelApp);
+
+        // check what the state is right after store creation
+        console.log(store.getState());
+
+        // if we want to stop receiving noifications we can use the unsub() function 
+        // that is returned from store.subscribe()
+        const unsub = store.subscribe(() => console.log(store.getState()));
+
+        // lets have a few dogs check-in
+        store.dispatch(checkIn('penny', true));
+        store.dispatch(checkIn('molly', true));
+        store.dispatch(checkIn('rover', true));
+        store.dispatch(checkIn('winston', true));
+        store.dispatch(checkIn('buster', true));
+
+
+        //lets have molly check out
+        store.getState().dogs.forEach(dog => {
+            if (dog.name === 'molly') {
+                boundCheckOut(dog);
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>
