@@ -5,6 +5,7 @@ This page covers the basic core concepts related to Redux.
 This sample does not use node or NPM. The library is simply loaded via a script tag.
 These instructions assume you're on a mac. PC users do whatever you do to get a simple http server running.
 In order to run this code in your browser, do the following:
+
 ```sh
 git clone http://github.com/aritzcovan/ReactCoreConcepts
 cd ReactCoreConcepts
